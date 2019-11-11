@@ -707,11 +707,11 @@ bool HeightMap::RayTriangle(const XMVECTOR& vert0, const XMVECTOR& vert1, const 
 	 // 3) RAYPOS, VERT2, VERT0
 
 	 // Move the ray backwards by a tiny bit (one unit) in case the ray is already on the plane
-
+	 XMVECTOR rayPosition = XMVectorSubtract(rayPos, XMVector4Normalize(rayDir));
 	 // ...
-
+	 
 	 // Step 1: Test against plane 1 and return false if behind plane
-
+	 PointPlane(rayPosition, vert0, vert1, colPos)
 	 // ...
 
 	 // Step 2: Test against plane 2 and return false if behind plane
@@ -747,7 +747,7 @@ bool HeightMap::PointPlane(const XMVECTOR& vert0, const XMVECTOR& vert1, const X
 	 float sD, sNumer;
 
 	 // Step 1: Calculate PNORM
-
+	 sNormN = XMVector4Normalize(XMVector3Cross(XMVectorSubtract(vert0, vert1), XMVectorSubtract(vert1, vert2)));
 	 // ...
 	
 	 // Step 2: Calculate D
