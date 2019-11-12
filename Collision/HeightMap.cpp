@@ -706,12 +706,13 @@ bool HeightMap::RayTriangle(const XMVECTOR& vert0, const XMVECTOR& vert1, const 
 	 // 1) RAYPOS, VERT0, VERT1
 	 // 2) RAYPOS, VERT1, VERT2
 	 // 3) RAYPOS, VERT2, VERT0
-	//XMVECTOR test = { 0.0f,1.0f,0.0f,0.0f };
+	XMVECTOR test = { 0.0f,1.0f,0.0f,0.0f };
 	 // Move the ray backwards by a tiny bit (one unit) in case the ray is already on the plane
-	 XMVECTOR rayPosition = XMVectorAdd(rayPos, XMVector4Normalize(rayDir));
+	 XMVECTOR rayPosition = XMVectorSubtract(rayPos, XMVector4Normalize(test));
 	 // ...
-	 
+
 	 // Step 1: Test against plane 1 and return false if behind plane
+	 //if (!PointPlane(rayPosition, vert0, vert1, colPos))
 	 if (!PointPlane(rayPosition, vert0, vert1, colPos))
 	 {
 		 return false;
@@ -720,14 +721,28 @@ bool HeightMap::RayTriangle(const XMVECTOR& vert0, const XMVECTOR& vert1, const 
 
 	 // Step 2: Test against plane 2 and return false if behind plane
 	 if (!PointPlane(rayPosition, vert1, vert2, colPos))
+	 //if (!PointPlane(rayPosition, vert2, vert1, colPos))
+	 //if (!PointPlane(vert1,vert2 , rayPosition, colPos)) //same as original top
+	 //if (!PointPlane(vert2, vert1, rayPosition, colPos)) //broke
+	 //if (!PointPlane(vert1, rayPosition, vert2, colPos)) 
+	 //if (!PointPlane(vert2, rayPosition, vert1, colPos))
+	 {
+		 return false;
+	 }
+
+	 if (!PointPlane(rayPosition, vert2, vert0, colPos))
+		 //if (!PointPlane(rayPosition, vert0, vert2, colPos))
+		 //if (!PointPlane(vert0,vert2 , rayPosition, colPos))
+		 //if (!PointPlane(vert2, vert0, rayPosition, colPos))
+		 //if (!PointPlane(vert2, rayPosition, vert0, colPos)) 
+		 //if (!PointPlane(vert0, rayPosition, vert2, colPos))
+
 	 {
 		 return false;
 	 }
 	 // ...
-	 if (!PointPlane(rayPosition, vert2, vert0, colPos))
-	 {
-		 return false;
-	 }
+	
+
 	 // Step 3: Test against plane 3 and return false if behind plane
 	 
 	 // ...
@@ -757,7 +772,11 @@ bool HeightMap::PointPlane(const XMVECTOR& vert0, const XMVECTOR& vert1, const X
 	 float sD, sNumer;
 
 	 // Step 1: Calculate PNORM
-	 sNormN = XMVector4Normalize(XMVector3Cross(XMVectorSubtract(vert0, vert1), XMVectorSubtract(vert1, vert2)));
+	 
+	// sNormN = XMVector4Normalize(XMVector3Cross(XMVectorSubtract(vert0, vert1), XMVectorSubtract(vert1, vert2)));
+	// sNormN = XMVector4Normalize(XMVector3Cross(XMVectorSubtract(vert2, vert0), XMVectorSubtract(vert0, vert1)));
+	// sNormN = XMVector4Normalize(XMVector3Cross(XMVectorSubtract(vert2, vert1), XMVectorSubtract(vert1, vert0)));
+
 	 // ...
 	 // Step 2: Calculate D
 	 sVec1 = -XMVector4Dot(sNormN, vert0);
@@ -765,7 +784,8 @@ bool HeightMap::PointPlane(const XMVECTOR& vert0, const XMVECTOR& vert1, const X
 	 // ...
 	 
 	 // Step 3: Calculate full equation
-	 sVec0 = XMVectorAdd((XMVector4Dot(sNormN, pointPos)), sVec1);
+	// sVec0 = XMVectorAdd((XMVector4Dot(sNormN, pointPos)), sVec1);
+	sVec0 = XMVectorSubtract(XMVector4Dot(sNormN,pointPos),(XMVector4Dot(sNormN,vert0)));
 	 XMStoreFloat(&sNumer, sVec0);
 	 // ...
 
