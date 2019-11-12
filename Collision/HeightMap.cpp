@@ -773,7 +773,7 @@ bool HeightMap::PointPlane(const XMVECTOR& vert0, const XMVECTOR& vert1, const X
 
 	 // Step 1: Calculate PNORM
 	 
-	// sNormN = XMVector4Normalize(XMVector3Cross(XMVectorSubtract(vert0, vert1), XMVectorSubtract(vert1, vert2)));
+	 sNormN = XMVector4Normalize(XMVector3Cross(XMVectorSubtract(vert0, vert1), XMVectorSubtract(vert1, vert2)));
 	// sNormN = XMVector4Normalize(XMVector3Cross(XMVectorSubtract(vert2, vert0), XMVectorSubtract(vert0, vert1)));
 	// sNormN = XMVector4Normalize(XMVector3Cross(XMVectorSubtract(vert2, vert1), XMVectorSubtract(vert1, vert0)));
 
