@@ -672,7 +672,8 @@ bool HeightMap::RayTriangle(const XMVECTOR& vert0, const XMVECTOR& vert1, const 
 	 
 	 // Step 3: Calculate the demoninator of the COLDIST equation: (|COLNORM| dot |RAYDIR|) and "early out" (return false) if it is 0
 	 XMVECTOR denominator = XMVector4Dot(colNormN, XMVector4Normalize(rayDir));
-	 if (denominator.m128_f32[0] == 0) return false;
+	 if (denominator.m128_f32[0] == 0) 
+		 return false;
 	 
 
 	 // ...
@@ -692,7 +693,7 @@ bool HeightMap::RayTriangle(const XMVECTOR& vert0, const XMVECTOR& vert1, const 
 
 	 // Step 6: Use COLDIST to calculate COLPOS
 	  // Then COLPOS with the plane will be RAYPOS + COLDIST*|RAYDIR| //normalised when two lines
-	 colPos = rayPos + colDist * XMVector4Normalize(rayDir);
+	 colPos = rayPos + COLDIST * XMVector4Normalize(rayDir);
 	 // ...
 
 	 // Next two lines are useful debug code to stop collision with anywhere beneath the pyramid. 
@@ -705,7 +706,7 @@ bool HeightMap::RayTriangle(const XMVECTOR& vert0, const XMVECTOR& vert1, const 
 	 // 1) RAYPOS, VERT0, VERT1
 	 // 2) RAYPOS, VERT1, VERT2
 	 // 3) RAYPOS, VERT2, VERT0
-		XMVECTOR test = { 0.0f,1.0f,0.0f,0.0f };
+	//XMVECTOR test = { 0.0f,1.0f,0.0f,0.0f };
 	 // Move the ray backwards by a tiny bit (one unit) in case the ray is already on the plane
 	 XMVECTOR rayPosition = XMVectorAdd(rayPos, XMVector4Normalize(rayDir));
 	 // ...
