@@ -660,7 +660,7 @@ bool HeightMap::RayTriangle(const XMVECTOR& vert0, const XMVECTOR& vert1, const 
 	 //colNormN.m128_f32[1];
 	 // Note that the variable colNormN is passed through by reference as part of the function parameters so you can calculate and return it!
 	 // Next line is useful debug code to stop collision with the top of the inverted pyramid (which has a normal facing straight up). 
-	 if( abs( colNormN.m128_f32[1])>0.99f ) return false;
+	 //if( abs( colNormN.m128_f32[1])>0.99f ) return false;
 	 // Remember to remove it once you have implemented part 2 below...
 
 	 // ...
@@ -696,7 +696,7 @@ bool HeightMap::RayTriangle(const XMVECTOR& vert0, const XMVECTOR& vert1, const 
 	 // ...
 
 	 // Next two lines are useful debug code to stop collision with anywhere beneath the pyramid. 
-	 if( min(vert0.m128_f32[1],vert1.m128_f32[1],vert2.m128_f32[1])>colPos.m128_f32[1]) return false;
+	// if( min(vert0.m128_f32[1],vert1.m128_f32[1],vert2.m128_f32[1])>colPos.m128_f32[1]) return false;
 	 // Remember to remove it once you have implemented part 2 below...
 
 	 // Part 2: Work out if the intersection point falls within the triangle
@@ -705,21 +705,30 @@ bool HeightMap::RayTriangle(const XMVECTOR& vert0, const XMVECTOR& vert1, const 
 	 // 1) RAYPOS, VERT0, VERT1
 	 // 2) RAYPOS, VERT1, VERT2
 	 // 3) RAYPOS, VERT2, VERT0
-
+		XMVECTOR test = { 0.0f,1.0f,0.0f,0.0f };
 	 // Move the ray backwards by a tiny bit (one unit) in case the ray is already on the plane
-	 XMVECTOR rayPosition = XMVectorSubtract(rayPos, XMVector4Normalize(rayDir));
+	 XMVECTOR rayPosition = XMVectorAdd(rayPos, XMVector4Normalize(rayDir));
 	 // ...
 	 
 	 // Step 1: Test against plane 1 and return false if behind plane
-	 PointPlane(rayPosition, vert0, vert1, colPos)
+	 if (!PointPlane(rayPosition, vert0, vert1, colPos))
+	 {
+		 return false;
+	 }
 	 // ...
 
 	 // Step 2: Test against plane 2 and return false if behind plane
-
+	 if (!PointPlane(rayPosition, vert1, vert2, colPos))
+	 {
+		 return false;
+	 }
 	 // ...
-
+	 if (!PointPlane(rayPosition, vert2, vert0, colPos))
+	 {
+		 return false;
+	 }
 	 // Step 3: Test against plane 3 and return false if behind plane
-
+	 
 	 // ...
 
 	 // Step 4: Return true! (on triangle)
@@ -749,17 +758,21 @@ bool HeightMap::PointPlane(const XMVECTOR& vert0, const XMVECTOR& vert1, const X
 	 // Step 1: Calculate PNORM
 	 sNormN = XMVector4Normalize(XMVector3Cross(XMVectorSubtract(vert0, vert1), XMVectorSubtract(vert1, vert2)));
 	 // ...
-	
 	 // Step 2: Calculate D
-
+	 sVec1 = -XMVector4Dot(sNormN, vert0);
+	// XMStoreFloat(&sD, -XMVector4Dot(sNormN, vert0));
 	 // ...
 	 
 	 // Step 3: Calculate full equation
-
+	 sVec0 = XMVectorAdd((XMVector4Dot(sNormN, pointPos)), sVec1);
+	 XMStoreFloat(&sNumer, sVec0);
 	 // ...
 
 	 // Step 4: Return false if < 0 (behind plane)
-
+	 if (sNumer < 0)
+	 {
+		 return false;
+	 }
 	 // ...
 
 	 // Step 5: Return true! (in front of plane)
